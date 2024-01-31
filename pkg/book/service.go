@@ -16,6 +16,7 @@ func GetBookList(url string, limit int, offset int) (models.BookPagination, erro
 	if err != nil {
 		fmt.Print(err.Error())
 	}
+	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
