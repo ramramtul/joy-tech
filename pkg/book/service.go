@@ -11,8 +11,7 @@ import (
 
 type BookService struct{}
 
-func GetBookList(req models.GetBookRequest) ([]models.Book, error) {
-	url := fmt.Sprintf("https://openlibrary.org/subjects/%s.json?details=%t&ebooks=%t&published_in=%s&limit=%d&offset=%d", req.Subject, req.Details, req.Ebooks, req.PublishedIn, req.Limit, req.Offset)
+func GetBookList(url string, limit int, offset int) (models.BookPagination, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Print(err.Error())
@@ -30,7 +29,15 @@ func GetBookList(req models.GetBookRequest) ([]models.Book, error) {
 		log.Fatal(jsonErr)
 	}
 
-	books := subjects.Works
+	models.BookList = subjects.Works
 
-	return books, nil
+	pagination := models.BookPagination{
+		Data:   subjects.Works,
+		Limit:  limit,
+		Offset: offset,
+	}
+
+	fmt.Print(models.BookList)
+
+	return pagination, nil
 }

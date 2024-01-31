@@ -2,8 +2,8 @@ package book
 
 import (
 	"encoding/json"
+	"fmt"
 	"joy-tech/helper"
-	"joy-tech/models"
 	"log"
 	"net/http"
 )
@@ -15,33 +15,55 @@ func NewBookHandler() *BookHandler {
 }
 
 func (h *BookHandler) HandleGetBookList(w http.ResponseWriter, r *http.Request) {
-	var detBool bool
-	var ebookBool bool
-	var limInt int
-	var offsetInt int
+	publishedStartIn := -1
+	publishedEndIn := -1
+	lim := 10
+	off := 1
 
-	subject := r.URL.Query().Get("subject")
-	details := r.URL.Query().Get("details")
-	if details != "" {
-		res, err := helper.ParseToBool(details)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		detBool = res
-	}
+	// move to ENV
+	url := fmt.Sprintf("https://openlibrary.org/subjects/love.json?")
 
 	ebooks := r.URL.Query().Get("ebooks")
 	if ebooks != "" {
 		res, err := helper.ParseToBool(ebooks)
 		if err != nil {
-			log.Fatal(err)
+			http.Error(w, "Error when parsing boolean", http.StatusUnprocessableEntity)
+			return
 		}
 
-		ebookBool = res
+		url = fmt.Sprintf("%s&ebooks=%t", url, res)
 	}
 
-	publishedIn := r.URL.Query().Get("publishedIn")
+	publishedStart := r.URL.Query().Get("published_start")
+	if publishedStart != "" {
+		start, err := helper.ParseToInt(publishedStart)
+		if err != nil {
+			http.Error(w, "Published year must be number", http.StatusUnprocessableEntity)
+			return
+		}
+
+		publishedStartIn = start
+	}
+
+	publishedEnd := r.URL.Query().Get("published_end")
+	if publishedEnd != "" {
+		end, err := helper.ParseToInt(publishedEnd)
+		if err != nil {
+			http.Error(w, "Published year must be number", http.StatusUnprocessableEntity)
+			return
+		}
+
+		publishedEndIn = end
+	}
+
+	if publishedStartIn > -1 && publishedEndIn > -1 {
+		url = fmt.Sprintf("%s&published_in=%s-%s", url, publishedStart, publishedEnd)
+	} else if publishedStartIn > -1 {
+		url = fmt.Sprintf("%s&published_in=%s", url, publishedStart)
+	} else {
+		url = fmt.Sprintf("%s&published_in=0-%s", url, publishedEnd)
+	}
+
 	limit := r.URL.Query().Get("limit")
 	if limit != "" {
 		res, err := helper.ParseToInt(limit)
@@ -49,7 +71,10 @@ func (h *BookHandler) HandleGetBookList(w http.ResponseWriter, r *http.Request) 
 			log.Fatal(err)
 		}
 
-		limInt = res
+		url = fmt.Sprintf("%s&limit=%d", url, res)
+		lim = res
+	} else {
+		url = fmt.Sprintf("%s&limit=%d", url, lim)
 	}
 
 	offset := r.URL.Query().Get("offset")
@@ -59,25 +84,17 @@ func (h *BookHandler) HandleGetBookList(w http.ResponseWriter, r *http.Request) 
 			log.Fatal(err)
 		}
 
-		offsetInt = res
+		url = fmt.Sprintf("%s&offset=%d", url, res)
+		off = res
+	} else {
+		url = fmt.Sprintf("%s&offset=%d", url, off)
 	}
 
-	req := models.GetBookRequest{
-		Subject:     subject,
-		Details:     detBool,
-		Ebooks:      ebookBool,
-		PublishedIn: publishedIn,
-		Limit:       limInt,
-		Offset:      offsetInt,
-	}
-
-	bookList, err := GetBookList(req)
+	bookList, err := GetBookList(url, lim, off)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Convert the user object to JSON and send it in the response
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(bookList)
-
 }

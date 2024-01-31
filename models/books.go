@@ -2,11 +2,14 @@ package models
 
 import "time"
 
+var BookList []Book
+
 type Book struct {
-	Key          string           `json:"key"`
-	Title        string           `json:"title"`
-	Authors      []BookAuthor     `json:"authors"`
-	Availability BookAvailability `json:"availability"`
+	Key              string           `json:"key"`
+	Title            string           `json:"title"`
+	FirstPublishYear int              `json:"first_publish_year"`
+	Authors          []BookAuthor     `json:"authors"`
+	Availability     BookAvailability `json:"availability"`
 }
 
 type BookAuthor struct {
@@ -32,11 +35,8 @@ type Subject struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-type GetBookRequest struct {
-	Subject     string
-	Details     bool
-	Ebooks      bool
-	PublishedIn string
-	Limit       int
-	Offset      int
+type BookPagination struct {
+	Data   []Book
+	Limit  int
+	Offset int
 }
