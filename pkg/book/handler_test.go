@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-var book BookHandler
-
 func TestHandleGetBookList(t *testing.T) {
 	type args struct {
 		req *http.Request
@@ -230,7 +228,7 @@ func TestHandleGetBookList(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tArgs := tt.args(t)
 			resp := httptest.NewRecorder()
-			handler := http.HandlerFunc(book.HandleGetBookList)
+			handler := http.HandlerFunc(HandleGetBookList)
 			handler.ServeHTTP(resp, tArgs.req)
 
 			if resp.Result().StatusCode != tt.wantCode {

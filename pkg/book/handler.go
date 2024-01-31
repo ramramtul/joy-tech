@@ -7,13 +7,7 @@ import (
 	"net/http"
 )
 
-type BookHandler struct{}
-
-func NewBookHandler() *BookHandler {
-	return &BookHandler{}
-}
-
-func (h *BookHandler) HandleGetBookList(w http.ResponseWriter, r *http.Request) {
+func HandleGetBookList(w http.ResponseWriter, r *http.Request) {
 	publishedStartIn := -1
 	publishedEndIn := -1
 	lim := 10
@@ -93,7 +87,7 @@ func (h *BookHandler) HandleGetBookList(w http.ResponseWriter, r *http.Request) 
 
 	bookList, err := GetBookList(url, lim, off)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

@@ -7,8 +7,6 @@ import (
 	"net/http"
 )
 
-type BookService struct{}
-
 func GetBookList(url string, limit int, offset int) (*models.BookPagination, error) {
 	resp, err := http.Get(url)
 	if err != nil {
