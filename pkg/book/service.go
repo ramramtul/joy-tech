@@ -37,7 +37,5 @@ func GetBookList(url string, limit int, offset int) (models.BookPagination, erro
 		Offset: offset,
 	}
 
-	fmt.Print(models.BookList)
-
 	return pagination, nil
 }
