@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"joy-tech/helper"
-	"log"
 	"net/http"
 )
 
@@ -68,7 +67,8 @@ func (h *BookHandler) HandleGetBookList(w http.ResponseWriter, r *http.Request) 
 	if limit != "" {
 		res, err := helper.ParseToInt(limit)
 		if err != nil {
-			log.Fatal(err)
+			http.Error(w, "Limit must be number", http.StatusUnprocessableEntity)
+			return
 		}
 
 		url = fmt.Sprintf("%s&limit=%d", url, res)
@@ -81,7 +81,8 @@ func (h *BookHandler) HandleGetBookList(w http.ResponseWriter, r *http.Request) 
 	if offset != "" {
 		res, err := helper.ParseToInt(offset)
 		if err != nil {
-			log.Fatal(err)
+			http.Error(w, "Offset must be number", http.StatusUnprocessableEntity)
+			return
 		}
 
 		url = fmt.Sprintf("%s&offset=%d", url, res)
@@ -92,7 +93,8 @@ func (h *BookHandler) HandleGetBookList(w http.ResponseWriter, r *http.Request) 
 
 	bookList, err := GetBookList(url, lim, off)
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
