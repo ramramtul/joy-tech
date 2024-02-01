@@ -26,10 +26,10 @@ your good to go! just hit using curl or postman
 
 ## Testing Application
 
-to test all system <br>
-go test ./... -coverprofile=coverage.out
+to test all system with coverage <br>
+go test -short -coverprofile coverage.out -v ./...
 
-to view code coverage <br>
+to view code coverage in detail <br>
 go tool cover -html=coverage.out
 
 
