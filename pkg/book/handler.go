@@ -13,7 +13,6 @@ func HandleGetBookList(w http.ResponseWriter, r *http.Request) {
 	lim := 10
 	off := 1
 
-	// move to ENV
 	url := fmt.Sprintf("https://openlibrary.org/subjects/love.json?")
 
 	ebooks := r.URL.Query().Get("ebooks")

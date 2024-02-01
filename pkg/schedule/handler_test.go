@@ -9,13 +9,6 @@ import (
 	"testing"
 )
 
-// // Mock function for SchedulePickUpBook
-// func SchedulePickUpBook(request models.ScheduleRequest) (models.ScheduleResponse, error) {
-// 	// Implement your mock logic here
-// 	// This function should simulate the behavior of SchedulePickUpBook
-// 	return models.ScheduleResponse{}, nil
-// }
-
 func TestHandleSchedulePickUp(t *testing.T) {
 	tests := []struct {
 		name            string
@@ -29,14 +22,14 @@ func TestHandleSchedulePickUp(t *testing.T) {
 			requestBody:     `{"edition_number": "OL10278W", "user_id": 1, "pick_up_schedule": "2025-01-31T10:48:25Z"}`,
 			expectedCode:    http.StatusOK,
 			expectedError:   "",
-			expectedPayload: `{"edition_number":"OL10278W","user_id":1,"pick_up_schedule":"2025-01-31T10:48:25Z"}`, // Adjust based on your expected response payload
+			expectedPayload: `{"edition_number":"OL10278W","user_id":1,"pick_up_schedule":"2025-01-31T10:48:25Z"}`,
 		},
 		{
 			name:            "Invalid edition number",
 			requestBody:     `{"edition_number": "invalid", "user_id": 1, "pick_up_schedule": "2024-01-31T10:48:25Z"}`,
 			expectedCode:    http.StatusBadRequest,
 			expectedError:   "",
-			expectedPayload: `Book not found.`, // Adjust based on your expected response payload
+			expectedPayload: `Book not found.`,
 		},
 		{
 			name:            "Invalid JSON",
